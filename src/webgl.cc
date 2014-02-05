@@ -1744,7 +1744,7 @@ JS_METHOD(GetExtension) {
 
   char *ext=strcasestr(extensions, sname);
 
-  if(!ext) return scope.Close(Undefined());
+  if(!ext) return scope.Close(Null());
   return scope.Close(JS_STR(ext, (int)::strlen(sname)));
 }
 
