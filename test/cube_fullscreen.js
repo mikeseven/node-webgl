@@ -551,6 +551,8 @@ function initAntTweakBar(canvas) {
 
 function webGLStart() {
   var canvas = document.createElement("cube-canvas");
+  // requestFullscreen is not possible yet, so do this instead
+  canvas.fullscreen = true;
   initGL(canvas);
   initShaders();
   initBuffers();
