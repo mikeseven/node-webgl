@@ -55,10 +55,23 @@ eval(fs.readFileSync(__dirname+ '/glMatrix-0.9.5.min.js','utf8'));
 </pre>
 
 - frame rate
-requestAnimationFrame(callback [, delay]) works as in the browser. 
-If delay is specified, it is the requested delay in milliseconds between animation frames 
-e.g. 16 will provide 1000 / 16 = 62 fps at best, which is the default value if delay is undefined. 
-If delay = 0, then the fastest possible framerate on your machine is used.
+requestAnimationFrame(callback) works as in the browser. After the callback is done drawing, the proccess will wait
+until VSync for swapping buffers. If you want to do useful work meanwhile, you can use a web worker.
+For benchmarking purposes, or for purely off-screen rendering, you can disable VSync by setting
+canvas.vsync to false. Don't disable vsync for regular, real time use, it causes tearing.
 
-The timestamp now uses the high-resolution timer in your machine (not new Date()). This provides a much more precise
-framerate as well as much better timing for animations.
+For a portable, high resolution time function (other than the time provided in the requestAnimationFrame callback),
+use this snippet at the beginning:
+<pre>
+var performance = (function(){
+    var hrtime = typeof process !== "undefined" && process.hrtime;
+    var init = hrtime && hrtime() || Date.now();
+    return ((typeof performance !== "undefined" && performance)
+        || (hrtime && {now: function(){
+            var hr = hrtime();
+            return (hr[0]-init[0]) * 1e3 + (hr[1]-init[1]) * 1e-6;
+    }}) || {now: function(){return Date.now() - init}});
+})();
+// and then:
+performance.now()  // Gives the running time in milliseconds
+</pre>
