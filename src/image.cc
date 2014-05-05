@@ -137,12 +137,13 @@ void Image::SrcSetter (Local<String> property, Local<Value> value, const Accesso
   image->Load(*filename_s);
 
   // adjust internal fields
-  size_t num_bytes = FreeImage_GetWidth(image->image_bmp) * FreeImage_GetHeight(image->image_bmp);
+  size_t num_pixels = FreeImage_GetWidth(image->image_bmp) * FreeImage_GetHeight(image->image_bmp);
   BYTE *pixels = FreeImage_GetBits(image->image_bmp);
+  size_t num_bytes = num_pixels * 4;
 
   // FreeImage stores data in BGR
   // Convert from BGR to RGB
-  for(size_t i = 0; i < num_bytes; i++)
+  for(size_t i = 0; i < num_pixels; i++)
   {
     size_t i4=i<<2;
     BYTE temp = pixels[i4 + 0];
