@@ -6,7 +6,7 @@
   "main": "index.js",
   "keywords": [ "webgl", "opengl" ],
   "engines": {
-    "node": "0.7.0-0.11.3"
+    "node": "0.9.1-0.11.3"
   },
    "directories": {
        "src": "src",
