@@ -22,9 +22,6 @@
         "<!(node -e \"require('nan')\")",
         '<(module_root_dir)/deps/include',
       ],
-      'library_dirs': [
-        '<(module_root_dir)/deps/<(platform)',
-      ],
       'conditions': [
         ['OS=="mac"', {
           'libraries': ['-lGLEW','-lfreeimage','-framework OpenGL']}],
