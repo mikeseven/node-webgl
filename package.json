@@ -32,7 +32,9 @@
     }
   ],
   "dependencies": {
-    "node-glfw": ">=0.3.0",
     "nan": "^0.8.0"
+  },
+  "devDependencies" : {
+    "node-glfw": ">=0.3.0"
   }
 }
