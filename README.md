@@ -1,8 +1,12 @@
 This is a Node.JS port of WebGL for desktops: windows, linux, mac
 
-It started as an extension of creationix/node-webgl and their great example com.creationix.minimason that 
-you can find in examples/wavefront.js. However, it is now quite different and support different platform 
-bindings, mainly GLFW instead of SDL.
+@creationix kicked off this effort and provided a great example for node knockout which is the
+basis for this library.  Tim's implementation required SDL, but we've paired it away and now you
+can use whatever framework that creates a webgl context!
+
+Examples for usage with various libraries like `node-sdl` or `node-glfw` live under the `lib`
+directory prefixed with `platform_x.js` to use them, ensure you have the module you'd like to
+use installed.
 
 Dependencies
 ============
