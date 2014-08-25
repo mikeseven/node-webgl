@@ -1,6 +1,6 @@
 {
   "author": "Mikael Bourges-Sevenier <mikeseven@gmail.com>",
-  "name": "node-webgl",
+  "name": "node-webgl-offscreen",
   "description": "WebGL bindings for node",
   "version": "0.2.1",
   "main": "index.js",

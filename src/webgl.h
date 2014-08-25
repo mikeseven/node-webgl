@@ -18,6 +18,10 @@ void AtExit();
 
 JS_METHOD(Init);
 
+JS_METHOD(CreateOffscreenContext);
+JS_METHOD(DestroyOffscreenContext);
+JS_METHOD(MakeOffscreenCurrent);
+
 JS_METHOD(Uniform1f);
 JS_METHOD(Uniform2f);
 JS_METHOD(Uniform3f);

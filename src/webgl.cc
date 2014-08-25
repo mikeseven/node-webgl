@@ -6,7 +6,6 @@
 #include "image.h"
 #include <node.h>
 #include <node_buffer.h>
-#include <GL/glew.h>
 
 #ifdef _WIN32
   #define  strcasestr(s, t) strstr(strupr(s), t)
@@ -91,17 +90,66 @@ inline Type* getArrayData(Local<Value> arg, int* num = NULL) {
   return data;
 }
 
-JS_METHOD(Init) {
+// nicholasbishop: credit to https://github.com/maghoff/osmesa-webgl
+// for the original implementation of the OSMesa wrapper
+
+// Wrapper of OSMesaCreateContext with type=OSMESA_RGBA
+JS_METHOD(CreateOffscreenContext) {
   HandleScope scope;
-  GLenum err = glewInit();
-  if (GLEW_OK != err)
-  {
-    /* Problem: glewInit failed, something is seriously wrong. */
-    fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
-    return scope.Close(JS_INT(-1));
+  const GLenum format = args[0]->IntegerValue();
+  OSMesaContext sharelist = NULL;
+  if (OSMesaContext context = OSMesaCreateContext(format, sharelist)) {
+    return scope.Close(JS_INT((intptr_t)context));
+  } else {
+    ThrowException(JS_STR("OSMesaCreateContext failed"));
+    return scope.Close(Undefined());
   }
-  //fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
-  return scope.Close(JS_INT(0));
+}
+
+// Unchecked cast from JS integer to OSMesaContext pointer
+static OSMesaContext integerAsOSMesaContext(const v8::Local<v8::Value>& value) {
+  if (value->IsNumber()) {
+    return (OSMesaContext)value->IntegerValue();
+  } else {
+    ThrowError("Expected OSMesa context object");
+	return NULL;
+  }
+}
+
+// Wrapper of OSMesaDestroyContext
+JS_METHOD(DestroyOffscreenContext) {
+  HandleScope scope;
+
+  if (OSMesaContext context = integerAsOSMesaContext(args[0])) {
+    OSMesaDestroyContext(context);
+  }
+
+  return scope.Close(Undefined());
+}
+
+// Wrapper of OSMesaMakeCurrent
+JS_METHOD(MakeOffscreenCurrent) {
+  HandleScope scope;
+
+  if (OSMesaContext context = integerAsOSMesaContext(args[0])) {
+    v8::Local<v8::Object> bufferObject = args[1]->ToObject();
+    char* buffer = (char*)bufferObject->GetIndexedPropertiesExternalArrayData();
+    const int bufferSize = bufferObject->GetIndexedPropertiesExternalArrayDataLength();
+    const GLsizei width = args[2]->Int32Value();
+    const GLsizei height = args[3]->Int32Value();
+
+    if (width < 1 || height < 1) {
+      ThrowException(JS_STR("Invalid dimensions"));
+    }
+
+    if (bufferSize < width * height * 4) {
+      ThrowException(JS_STR("Buffer too small"));
+    }
+
+    OSMesaMakeCurrent(context, &buffer[0], GL_UNSIGNED_BYTE, width, height);
+  }
+
+  return scope.Close(Undefined());
 }
 
 JS_METHOD(Uniform1f) {

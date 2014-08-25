@@ -11,6 +11,7 @@
 #include <cstdlib>
 
 #define JS_GL_CONSTANT(name) target->Set(JS_STR( #name ), JS_INT(GL_ ## name))
+#define JS_OSMESA_CONSTANT(name) target->Set(JS_STR( #name ), JS_INT(name))
 
 extern "C" {
 void init(Handle<Object> target)
@@ -20,7 +21,18 @@ void init(Handle<Object> target)
 
   Image::Initialize(target);
 
-  NODE_SET_METHOD(target, "Init", webgl::Init);
+  // OSMesa (offscreen Mesa) API
+  NODE_SET_METHOD(target, "CreateOffscreenContext", webgl::CreateOffscreenContext);
+  NODE_SET_METHOD(target, "DestroyOffscreenContext", webgl::DestroyOffscreenContext);
+  NODE_SET_METHOD(target, "MakeOffscreenCurrent", webgl::MakeOffscreenCurrent);
+  // OSMesaCreateContext format argument
+  JS_OSMESA_CONSTANT(OSMESA_COLOR_INDEX);
+  JS_OSMESA_CONSTANT(OSMESA_RGBA);
+  JS_OSMESA_CONSTANT(OSMESA_BGRA);
+  JS_OSMESA_CONSTANT(OSMESA_ARGB);
+  JS_OSMESA_CONSTANT(OSMESA_RGB);
+  JS_OSMESA_CONSTANT(OSMESA_BGR);
+  JS_OSMESA_CONSTANT(OSMESA_RGB_565);
  
   NODE_SET_METHOD(target, "uniform1f", webgl::Uniform1f);
   NODE_SET_METHOD(target, "uniform2f", webgl::Uniform2f);

@@ -20,13 +20,20 @@
       ],
       'include_dirs': [
         '<(module_root_dir)/deps/include',
+        '/opt/mesa/include',
       ],
       'library_dirs': [
         '<(module_root_dir)/deps/<(platform)',
       ],
+      'ldflags': [
+        # TODO(nicholasbishop): putting this path into library_dirs
+        # doesn't work, at least not with the version of
+        # gyp/node-gyp/node that I have
+        '-L/opt/mesa/lib'
+      ],
       'conditions': [
         ['OS=="mac"', {'libraries': ['-lGLEW','-lfreeimage','-framework OpenGL']}],
-        ['OS=="linux"', {'libraries': ['-lfreeimage','-lGLEW','-lGL']}],
+        ['OS=="linux"', {'libraries': ['-lfreeimage','-lOSMesa']}],
         ['OS=="win"', {
           'libraries': [
             'freeimage64.lib','glew64s.lib','opengl32.lib'

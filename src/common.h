@@ -10,7 +10,12 @@
 
 #include <node.h>
 #include <v8.h>
-#include "arch_wrapper.h"
+
+#define GL_GLEXT_PROTOTYPES
+
+#include <GL/gl.h>
+#include <GL/glext.h>
+#include <GL/osmesa.h>
 
 namespace {
 #define JS_STR(...) v8::String::New(__VA_ARGS__)
