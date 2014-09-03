@@ -5,3 +5,7 @@ npm-debug.log
 .idea
 Debug
 *.log
+
+# Symlinks
+mesa/lib/libOSMesa.so
+mesa/lib/libglapi.so
