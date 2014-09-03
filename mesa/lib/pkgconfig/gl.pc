@@ -1,0 +1,13 @@
+prefix=/app/mesa
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: gl
+Description: Mesa OpenGL library
+Requires.private: 
+Version: 10.2.6
+Libs: -L${libdir} -lGL
+Libs.private: 
+Cflags: -I${includedir}  -DMESA_EGL_NO_X11_HEADERS
+glx_tls: yes
