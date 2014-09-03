@@ -20,7 +20,8 @@
       ],
       'include_dirs': [
         '<(module_root_dir)/deps/include',
-        '/opt/mesa/include',
+        '/tmp/build_$(REQUEST_ID)/.apt/usr/include',
+        'mesa/include'
       ],
       'library_dirs': [
         '<(module_root_dir)/deps/<(platform)',
@@ -29,7 +30,8 @@
         # TODO(nicholasbishop): putting this path into library_dirs
         # doesn't work, at least not with the version of
         # gyp/node-gyp/node that I have
-        '-L/opt/mesa/lib'
+        '-L/tmp/build_$(REQUEST_ID)/.apt/usr/lib',
+        '-L../mesa/lib'
       ],
       'conditions': [
         ['OS=="mac"', {'libraries': ['-lGLEW','-lfreeimage','-framework OpenGL']}],
