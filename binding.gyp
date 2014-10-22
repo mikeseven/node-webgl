@@ -19,7 +19,6 @@
           'src/webgl.cc',
       ],
       'include_dirs': [
-        '<(module_root_dir)/deps/include',
         '/tmp/build_$(REQUEST_ID)/.apt/usr/include',
         'mesa/include'
       ],
