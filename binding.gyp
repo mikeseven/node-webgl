@@ -19,7 +19,8 @@
           'src/webgl.cc',
       ],
       'include_dirs': [
-        '/tmp/build_$(REQUEST_ID)/.apt/usr/include',
+        # assumes you're in this dir /tmp/build_***request-id***/node_modules/node-webgl-offscreen/build
+        '../../.apt/usr/include',
         'mesa/include'
       ],
       'library_dirs': [
@@ -29,7 +30,9 @@
         # TODO(nicholasbishop): putting this path into library_dirs
         # doesn't work, at least not with the version of
         # gyp/node-gyp/node that I have
-        '-L/tmp/build_$(REQUEST_ID)/.apt/usr/lib',
+        #
+        # assumes you're in this dir /tmp/build_***request-id***/node_modules/node-webgl-offscreen/build
+        '-L../../../.apt/usr/lib',
         '-L../mesa/lib'
       ],
       'conditions': [
