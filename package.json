@@ -21,7 +21,7 @@
    },
    "scripts": {
        "preinstall": "python create_symlinks.py",
-       "install": "node-gyp rebuild"
+       "install": "node-gyp rebuild --verbose"
    },
    "licenses": [{
         "type": "BSD",
