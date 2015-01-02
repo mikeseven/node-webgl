@@ -20,7 +20,7 @@
        "url": "https://mikeseven@github.com/mikeseven/node-webgl.git" 
    },
    "scripts": {
-       "preinstall": "python create_symlinks.py",
+       "preinstall": "node create_symlinks.js",
        "install": "node-gyp rebuild --verbose"
    },
    "licenses": [{
