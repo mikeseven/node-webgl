@@ -69,23 +69,73 @@ inline void *getImageData(Local<Value> arg) {
   return pixels;
 }
 
-template<typename Type>
-inline Type* getArrayData(Local<Value> arg, int* num = NULL) {
-  Type *data=NULL;
+NAN_WEAK_CALLBACK(ExternalCallback) {
+  data.GetValue()->Neuter();
+  delete[] static_cast<char*>(data.GetParameter());
+}
+
+template <typename Type>
+inline Type* getArrayData(Local<Value> arg, int* num = NULL);
+
+template<>
+inline GLfloat* getArrayData<GLfloat>(Local<Value> arg, int* num) {
+  GLfloat *data=NULL;
   if(num) *num=0;
 
   if(!arg->IsNull()) {
     if(arg->IsArray()) {
       Local<Array> arr = Local<Array>::Cast(arg);
       if(num) *num=arr->Length();
-      data = reinterpret_cast<Type*>(arr->GetIndexedPropertiesExternalArrayData());
+      data = reinterpret_cast<GLfloat*>(arr->GetIndexedPropertiesExternalArrayData());
     }
-    else if(arg->IsObject()) {
-      if(num) *num = arg->ToObject()->GetIndexedPropertiesExternalArrayDataLength();
-      data = reinterpret_cast<Type*>(arg->ToObject()->GetIndexedPropertiesExternalArrayData());
+    else if(arg->IsArrayBufferView()) {
+      Local<ArrayBufferView> obj = arg.As<ArrayBufferView>();
+      Local<ArrayBuffer> buffer = obj->Buffer();
+      if (!buffer->IsExternal()) {
+          ArrayBuffer::Contents contents = buffer->Externalize();
+          obj->SetIndexedPropertiesToExternalArrayData(contents.Data(), kExternalFloat32Array, contents.ByteLength() / 4);
+          NanMakeWeakPersistent(buffer, contents.Data(), ExternalCallback);
+      }
+      if(num) *num = obj->GetIndexedPropertiesExternalArrayDataLength();
+      data = reinterpret_cast<GLfloat*>(obj->GetIndexedPropertiesExternalArrayData());
+
     }
-    else
+    else {
       NanThrowError("Bad array argument");
+      return NULL;
+    }
+  }
+
+  return data;
+}
+
+template<>
+inline GLint* getArrayData<GLint>(Local<Value> arg, int* num) {
+  GLint *data=NULL;
+  if(num) *num=0;
+
+  if(!arg->IsNull()) {
+    if(arg->IsArray()) {
+      Local<Array> arr = Local<Array>::Cast(arg);
+      if(num) *num=arr->Length();
+      data = reinterpret_cast<GLint*>(arr->GetIndexedPropertiesExternalArrayData());
+    }
+    else if(arg->IsArrayBufferView()) {
+      Local<ArrayBufferView> obj = arg.As<ArrayBufferView>();
+      Local<ArrayBuffer> buffer = obj->Buffer();
+      if (!buffer->IsExternal()) {
+          ArrayBuffer::Contents contents = buffer->Externalize();
+          obj->SetIndexedPropertiesToExternalArrayData(contents.Data(), kExternalInt32Array, contents.ByteLength() / 4);
+          NanMakeWeakPersistent(buffer, contents.Data(), ExternalCallback);
+      }
+      if(num) *num = obj->GetIndexedPropertiesExternalArrayDataLength();
+      data = reinterpret_cast<GLint*>(obj->GetIndexedPropertiesExternalArrayData());
+
+    }
+    else {
+      NanThrowError("Bad array argument");
+      return NULL;
+    }
   }
 
   return data;
