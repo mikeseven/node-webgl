@@ -2,7 +2,7 @@ nodejs=true;
 
 //Read and eval library
 fs=require('fs');
-eval(fs.readFileSync(__dirname+ '/glMatrix-0.9.5.min.js','utf8'));
+mat4=require('./gl-Matrix-2.4.0.min.js').mat4;
 
 var WebGL=require('../index'),
     Image = WebGL.Image,
@@ -24,15 +24,15 @@ var z = -5.0;
 document.on("resize",function(evt){
   gl.viewportWidth=evt.width;
   gl.viewportHeight=evt.height;
-  
+
   // make sure AntTweakBar is repositioned correctly and events correct
   ATB.WindowSize(evt.width,evt.height);
 });
 
 
 var shaders= {
-    "shader-fs" : 
-      [     
+    "shader-fs" :
+      [
        "#ifdef GL_ES",
        "  precision mediump float;",
        "#endif",
@@ -42,8 +42,8 @@ var shaders= {
        "}"
        ].join("\n"),
 
-       "shader-vs" : 
-         [ 
+       "shader-vs" :
+         [
           "attribute vec3 aVertexPosition;",
           "attribute vec4 aVertexColor;",
           "uniform mat4 uMVMatrix;",
@@ -60,7 +60,7 @@ var gl;
 
 function initGL(canvas) {
   log('init WebGL');
-  
+
   try {
     gl = canvas.getContext("experimental-webgl");
     gl.viewportWidth = canvas.width;
@@ -110,7 +110,7 @@ function getShader(gl, id) {
 
   gl.shaderSource(shader, str);
   gl.compileShader(shader);
-  
+
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
     alert(gl.getShaderInfoLog(shader));
     return null;
@@ -171,8 +171,8 @@ function setMatrixUniforms() {
 if(error!==0){
       console.log("Error occured",gl.viewportWidth+", "+gl.viewportHeight, error);
   }
-  
-  
+
+
   gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
 }
 
@@ -361,7 +361,7 @@ function initBuffers() {
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeVertexIndices), gl.STATIC_DRAW);
   cubeVertexIndexBuffer.itemSize = 1;
   cubeVertexIndexBuffer.numItems = 36;
-  
+
   console.log(gl.getError());
 }
 
@@ -387,7 +387,7 @@ function initBuffers2() {
   var v=new Array(8);
   for(var i=0;i<8;i++)
     v[i]=new Array(4);
-  
+
   var size=2;
 
   v[0][0] = v[1][0] = v[2][0] = v[3][0] = -size / 2;
@@ -406,25 +406,25 @@ function initBuffers2() {
     vertices.push(v[faces[i][0]][2],v[faces[i][2]][1],v[faces[i][2]][2]);
     vertices.push(v[faces[i][0]][3],v[faces[i][3]][1],v[faces[i][3]][2]);
   }
-  
+
 }
 
 function drawScene() {
         var error = gl.getError();
-    
+
   gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 
 
-  mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
+  mat4.perspective(pMatrix, 45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0);
 
   mat4.identity(mvMatrix);
 
-  mat4.translate(mvMatrix, [0.0, 0.0, z]);
+  mat4.translate(mvMatrix, mvMatrix, [0.0, 0.0, z]);
 
-  mat4.rotate(mvMatrix, degToRad(xRot), [1, 0, 0]);
-  mat4.rotate(mvMatrix, degToRad(yRot), [0, 1, 0]);
+  mat4.rotate(mvMatrix, mvMatrix, degToRad(xRot), [1, 0, 0]);
+  mat4.rotate(mvMatrix, mvMatrix, degToRad(yRot), [0, 1, 0]);
 
 
 
@@ -439,24 +439,24 @@ function drawScene() {
 
   gl.bindBuffer(gl.ARRAY_BUFFER, cubeVerticesColorBuffer);
   gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, 4, gl.FLOAT, false, 0, 0);
-  
-  
+
+
   gl.enable(gl.CULL_FACE);
-  
+
 
   gl.cullFace(gl.FRONT);
-  
+
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVertexIndexBuffer);
-  
+
 
   setMatrixUniforms();
-  
-  
+
+
   gl.drawElements(gl.TRIANGLES, cubeVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 
   gl.cullFace(gl.BACK);
   gl.drawElements(gl.TRIANGLES, cubeVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
-  
+
   // cleanup GL state
   gl.bindBuffer(gl.ARRAY_BUFFER, null);
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
@@ -469,11 +469,11 @@ var fps=0;
 
 function animate(timeNow) {
   if(!timeNow) return; // first time, timeNow may be undefined
-  
+
   if (lastTime != 0) {
     var elapsed = timeNow - lastTime;
     fps = Math.round(1000/elapsed);
-    
+
     xRot += (xSpeed * elapsed) / 1000.0;
     yRot += (ySpeed * elapsed) / 1000.0;
   }
@@ -508,14 +508,14 @@ function tick(timeNow) {
   animate(timeNow);
 
   drawATB();
-    
+
   gl.finish(); // for timing
   requestAnimationFrame(tick,0);
 }
 
 function initAntTweakBar(canvas) {
   log('init AntTweakBar');
-  
+
   ATB.Init();
   ATB.Define(" GLOBAL help='This example shows how to integrate AntTweakBar with GLFW and OpenGL.' "); // Message added to the help bar.
   ATB.WindowSize(canvas.width, canvas.height);
@@ -528,14 +528,14 @@ function initAntTweakBar(canvas) {
   " label='z' min=-5 max=5 step=0.1 keyIncr=s keyDecr=S help='Eye distance' ");
 
   twBar.AddVar("Orientation", ATB.TYPE_QUAT4F, {
-    getter: function(data){ 
+    getter: function(data){
       var a=degToRad(xRot)*0.5, b=degToRad(yRot)*0.5;
       var x1=Math.sin(a),y1=0,z1=0,w1=Math.cos(a);
       var x2=0,y2=Math.sin(b),z2=0,w2=Math.cos(b);
       return [w1 * x2 + x1 * w2 + y1 * z2 - z1 * y2,
               w1 * y2 + y1 * w2 + z1 * x2 - x1 * z2,
               w1 * z2 + z1 * w2 + x1 * y2 - y1 * x2,
-              w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2]; 
+              w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2];
       },
   },
   " label=Orientation opened=true group=Rotation help='Orientation (degree)' ");

@@ -2,7 +2,10 @@ nodejs=true;
 
 //Read and eval library
 fs=require('fs');
-eval(fs.readFileSync(__dirname+ '/glMatrix-0.9.5.min.js','utf8'));
+glm=require('./gl-Matrix-2.4.0.min.js');
+mat3=glm.mat3;
+mat4=glm.mat4;
+vec3=glm.vec3;
 
 var WebGL=require('../index'),
     Image = WebGL.Image,
@@ -18,8 +21,8 @@ document.on("resize",function(evt){
 
 
 var shaders= {
-    "shader-fs" : 
-      [     
+    "shader-fs" :
+      [
        "#ifdef GL_ES",
        "  precision mediump float;",
        "#endif",
@@ -33,8 +36,8 @@ var shaders= {
        "}"
        ].join("\n"),
 
-       "shader-vs" : 
-         [ 
+       "shader-vs" :
+         [
           "attribute vec3 aVertexPosition;",
           "attribute vec3 aVertexNormal;",
           "attribute vec2 aTextureCoord;",
@@ -216,8 +219,8 @@ function setMatrixUniforms() {
   gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
 
   var normalMatrix = mat3.create();
-  mat4.toInverseMat3(mvMatrix, normalMatrix);
-  mat3.transpose(normalMatrix);
+  mat4.invert(mvMatrix, normalMatrix);
+  mat3.transpose(normalMatrix, normalMatrix);
   gl.uniformMatrix3fv(shaderProgram.nMatrixUniform, false, normalMatrix);
 }
 
@@ -434,14 +437,14 @@ function drawScene() {
   gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
+  mat4.perspective(pMatrix, 45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0);
 
   mat4.identity(mvMatrix);
 
-  mat4.translate(mvMatrix, [0.0, 0.0, z]);
+  mat4.translate(mvMatrix, mvMatrix, [0.0, 0.0, z]);
 
-  mat4.rotate(mvMatrix, degToRad(xRot), [1, 0, 0]);
-  mat4.rotate(mvMatrix, degToRad(yRot), [0, 1, 0]);
+  mat4.rotate(mvMatrix, mvMatrix, degToRad(xRot), [1, 0, 0]);
+  mat4.rotate(mvMatrix, mvMatrix, degToRad(yRot), [0, 1, 0]);
 
   gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexPositionBuffer);
   gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, cubeVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
@@ -471,15 +474,15 @@ function drawScene() {
   ambientR=0.2;
   ambientG=0.2;
   ambientB=0.2;
-  
+
   lightDirectionX=-0.25;
   lightDirectionY=-0.25;
   lightDirectionZ=-1;
-  
+
   directionalR=0.8;
   directionalG=0.8;
   directionalB=0.8;
-  
+
   gl.uniform1i(shaderProgram.useLightingUniform, lighting);
   if (lighting) {
     gl.uniform3f(

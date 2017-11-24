@@ -3,7 +3,7 @@ alert=console.log;
 
 //Read and eval library
 fs=require('fs');
-eval(fs.readFileSync(__dirname+ '/glMatrix-0.9.5.min.js','utf8'));
+mat4=require('./gl-Matrix-2.4.0.min.js').mat4;
 
 var WebGL=require('../index'),
     Image = WebGL.Image,
@@ -13,8 +13,8 @@ document.setTitle("screen aligned texture");
 requestAnimFrame = document.requestAnimationFrame;
 
 var shaders= {
-    "shader-fs" : 
-      [     
+    "shader-fs" :
+      [
        "#ifdef GL_ES",
        "  precision mediump float;",
        "#endif",
@@ -25,8 +25,8 @@ var shaders= {
        "}"
        ].join("\n"),
 
-       "shader-vs" : 
-         [ 
+       "shader-vs" :
+         [
           "attribute vec3 aVertexPosition;",
           "attribute vec2 aTextureCoord;",
           "uniform mat4 uMVMatrix;",
@@ -229,7 +229,7 @@ function drawScene() {
   gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  mat4.ortho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0, pMatrix);
+  mat4.ortho(pMatrix, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
 
   mat4.identity(mvMatrix);
 

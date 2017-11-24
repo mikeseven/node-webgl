@@ -2,7 +2,7 @@ nodejs=true;
 
 //Read and eval library
 fs=require('fs');
-eval(fs.readFileSync(__dirname+ '/glMatrix-0.9.5.min.js','utf8'));
+mat4=require('./gl-Matrix-2.4.0.min.js').mat4;
 
 var WebGL=require('../index'),
     Image = WebGL.Image,
@@ -20,8 +20,8 @@ document.on("resize",function(evt){
 requestAnimationFrame = document.requestAnimationFrame;
 
 var shaders= {
-    "shader-fs" : 
-      [     
+    "shader-fs" :
+      [
        "#ifdef GL_ES",
        "  precision mediump float;",
        "#endif",
@@ -32,8 +32,8 @@ var shaders= {
        "}"
        ].join("\n"),
 
-       "shader-vs" : 
-         [ 
+       "shader-vs" :
+         [
           "attribute vec3 aVertexPosition;",
           "attribute vec2 aTextureCoord;",
           "uniform mat4 uMVMatrix;",
@@ -305,15 +305,15 @@ function drawScene() {
   gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
+  mat4.perspective(pMatrix, 45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0);
 
   mat4.identity(mvMatrix);
 
-  mat4.translate(mvMatrix, [0.0, 0.0, -5.0]);
+  mat4.translate(mvMatrix, mvMatrix, [0.0, 0.0, -5.0]);
 
-  mat4.rotate(mvMatrix, degToRad(xRot), [1, 0, 0]);
-  mat4.rotate(mvMatrix, degToRad(yRot), [0, 1, 0]);
-  mat4.rotate(mvMatrix, degToRad(zRot), [0, 0, 1]);
+  mat4.rotate(mvMatrix, mvMatrix, degToRad(xRot), [1, 0, 0]);
+  mat4.rotate(mvMatrix, mvMatrix, degToRad(yRot), [0, 1, 0]);
+  mat4.rotate(mvMatrix, mvMatrix, degToRad(zRot), [0, 0, 1]);
 
   gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexPositionBuffer);
   gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, cubeVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
