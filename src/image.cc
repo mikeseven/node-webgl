@@ -173,7 +173,8 @@ NAN_SETTER(Image::SrcSetter) {
     value  // argument
   };
 
-  TryCatch tc;
+  Isolate *isolate = v8::Isolate::GetCurrent();
+  TryCatch tc(isolate);
 
   emit_f->Call(info.This(), 2, argv);
 
@@ -189,17 +190,17 @@ NAN_METHOD(Image::save) {
 
   void *buffer = node::Buffer::Data(info[1]);
 
-  uint32_t width=info[2]->ToUint32()->Value();
-  uint32_t height=info[3]->ToUint32()->Value();
+  uint32_t width=info[2]->Uint32Value();
+  uint32_t height=info[3]->Uint32Value();
 
   uint32_t pitch=width*4, bpp=32;
   uint32_t redMask=0xFF000000, greenMask=0x00FF0000, blueMask=0x0000FF00;
 
-  if(info.Length()>4) pitch=info[4]->ToUint32()->Value();
-  if(info.Length()>5) bpp=info[5]->ToUint32()->Value();
-  if(info.Length()>6) redMask=info[6]->ToUint32()->Value();
-  if(info.Length()>7) greenMask=info[7]->ToUint32()->Value();
-  if(info.Length()>8) blueMask=info[8]->ToUint32()->Value();
+  if(info.Length()>4) pitch=info[4]->Uint32Value();
+  if(info.Length()>5) bpp=info[5]->Uint32Value();
+  if(info.Length()>6) redMask=info[6]->Uint32Value();
+  if(info.Length()>7) greenMask=info[7]->Uint32Value();
+  if(info.Length()>8) blueMask=info[8]->Uint32Value();
 
   FIBITMAP *image = FreeImage_ConvertFromRawBits(
       (BYTE*)buffer,

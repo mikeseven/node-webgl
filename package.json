@@ -9,7 +9,7 @@
     "opengl"
   ],
   "engines": {
-    "node": ">=0.7.0"
+    "node": ">=10.0.0"
   },
   "directories": {
     "src": "src",
@@ -29,6 +29,6 @@
   "dependencies": {
     "bindings": "^1.2.1",
     "nan": "^2.1.0",
-    "node-glfw": ">=0.4.0"
+    "node-glfw": "github:chemecse/node-glfw"
   }
 }
