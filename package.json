@@ -20,7 +20,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mikeseven/node-webgl.git"
+    "url": "https://github.com/floored/node-webgl.git"
   },
   "scripts": {
     "install": "node-gyp rebuild"
@@ -29,6 +29,6 @@
   "dependencies": {
     "bindings": "^1.2.1",
     "nan": "^2.1.0",
-    "node-glfw": "github:chemecse/node-glfw"
+    "node-glfw": "github:floored/node-glfw"
   }
 }
