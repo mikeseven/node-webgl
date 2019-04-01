@@ -72,7 +72,7 @@ inline void *getImageData(Local<Value> arg) {
       Nan::ThrowError("Bad texture argument");
     }else if(obj->IsArrayBufferView()){
         int num;
-        
+
         pixels = getArrayData<BYTE>(obj, &num);
     }else{
         pixels = node::Buffer::Data(Nan::Get(obj, JS_STR("data")).ToLocalChecked());
@@ -91,9 +91,9 @@ NAN_METHOD(Init) {
     info.GetReturnValue().Set(JS_INT(-1));
   }else{
     //fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
-    info.GetReturnValue().Set(JS_INT(0));  
-  } 
-  
+    info.GetReturnValue().Set(JS_INT(0));
+  }
+
 }
 
 NAN_METHOD(Uniform1f) {
@@ -562,7 +562,7 @@ NAN_METHOD(GetUniformLocation) {
 
   int program = info[0]->Int32Value();
   v8::String::Utf8Value name(info[1]);
-  
+
   info.GetReturnValue().Set(JS_INT(glGetUniformLocation(program, *name)));
 }
 
@@ -760,16 +760,16 @@ NAN_METHOD(BufferData) {
   if(info[1]->IsObject()) {
     Local<Object> obj = Local<Object>::Cast(info[1]);
     GLenum usage = info[2]->Int32Value();
-    
+
     CHECK_ARRAY_BUFFER(obj);
-    
-         
-            
+
+
+
     int element_size = 1;
     Local<ArrayBufferView> arr = Local<ArrayBufferView>::Cast(obj);
     int size = arr->ByteLength() * element_size;
     void* data = (uint8_t*)arr->Buffer()->GetContents().Data() + arr->ByteOffset();
-    
+
     glBufferData(target, size, data, usage);
   }
   else if(info[1]->IsNumber()) {
@@ -1384,7 +1384,7 @@ NAN_METHOD(GetShaderSource) {
   glGetShaderSource(shader, len, NULL, source);
 
   Local<String> str = JS_STR(source);
-  delete source;
+  delete [] source;
 
   info.GetReturnValue().Set(str);
 }
@@ -1543,13 +1543,13 @@ NAN_METHOD(GetParameter) {
   {
     // return a string
     char *params=(char*) ::glGetString(name);
-    
+
     if(params!=NULL){
       info.GetReturnValue().Set(JS_STR(params));
     }else{
       info.GetReturnValue().Set(Nan::Undefined());
     }
-    
+
     break;
   }
   case GL_MAX_VIEWPORT_DIMS:
@@ -1764,11 +1764,11 @@ NAN_METHOD(GetExtension) {
   char *sname=*name;
   char *extensions=(char*) glGetString(GL_EXTENSIONS);
   char *ext=strcasestr(extensions, sname);
-  
-  if(ext==NULL){ 
+
+  if(ext==NULL){
       info.GetReturnValue().Set(Nan::Undefined());
   }else{
-     info.GetReturnValue().Set(JS_STR(ext, (int)::strlen(sname))); 
+     info.GetReturnValue().Set(JS_STR(ext, (int)::strlen(sname)));
   }
 }
 
